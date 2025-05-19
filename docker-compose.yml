@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  iptv-proxy:
+    image: nginx:alpine
+    container_name: iptv-proxy
+    ports:
+      - "8085:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./www:/usr/share/nginx/html
+      - ./data:/data
+    restart: unless-stopped
+    environment:
+      - TZ=America/New_York  # Adjust to your timezone
+    networks:
+      - iptv-network
+
+  iptv-updater:
+    image: alpine:latest
+    container_name: iptv-updater
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - ./www:/www
+    command: >
+      /bin/sh -c "apk add --no-cache curl wget && chmod +x /scripts/update-iptv.sh && /scripts/update-iptv.sh && crond -f -d 8"
+    restart: unless-stopped
+    environment:
+      - TZ=America/New_York  # Adjust to your timezone
+      - M3U_URL=http://line.dino.ws/get.php?username=9b7f9d2d85&password=5bede84074&type=m3u_plus&output=ts&period=7
+      - XMLTV_URL=http://line.dino.ws/xmltv.php?username=9b7f9d2d85&password=5bede84074&period=7
+      - SERVER_IP=your-synology-ip   # 192.168.1.153
+      - SERVER_PORT=8085
+    networks:
+      - iptv-network
+
+networks:
+  iptv-network:
+    driver: bridge
