@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Access Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --light: #ecf0f1;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+            --dark: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: var(--secondary);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+        }
+        
+        .status-badge i {
+            margin-right: 8px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 20px;
+            background: var(--light);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+            color: var(--dark);
+        }
+        
+        .card-header i {
+            font-size: 22px;
+            color: var(--primary);
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .url-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .url-box .url-label {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        
+        .url-box .url-content {
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            padding-right: 40px;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .copy-btn:hover {
+            color: var(--primary-dark);
+        }
+        
+        .stat-row {
+            display: flex;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+        }
+        
+        .stat-info .value {
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        
+        .stat-info .label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .action-btn i {
+            margin-right: 8px;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .setup-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .setup-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .setup-card .setup-header {
+            background: var(--secondary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .setup-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: white;
+            color: var(--secondary);
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .setup-card h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        
+        .setup-body {
+            padding: 20px;
+        }
+        
+        .setup-body p {
+            margin-bottom: 15px;
+        }
+        
+        .setup-body ul,
+        .setup-body ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .setup-body li {
+            margin-bottom: 8px;
+        }
+        
+        .setup-body strong {
+            color: var(--dark);
+        }
+        
+        footer {
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--dark);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .stat-row {
+                flex-direction: column;
+            }
+            
+            .stat-item {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .setup-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-tv"></i> IPTV Access Portal</h1>
+            <div class="status-badge">
+                <div class="loading"></div>
+                <span>Stream Status: Checking...</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="padding-top: 30px;">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-play-circle"></i>
+                <h2>M3U Playlist</h2>
+            </div>
+            <div class="card-body">
+                <p>Use this URL in your IPTV player or media center to access your channels:</p>
+                
+                <div class="url-box">
+                    <div class="url-content" id="m3u-url">http://192.168.1.153:8085/playlist.m3u</div>
+                    <button class="copy-btn" onclick="copyToClipboard('m3u-url', event)" title="Copy to clipboard">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                
+                <div class="stat-row">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="value">Checking...</div>
+                            <div class="label">File Size</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="value">Checking...</div>
+                            <div class="label">Channels</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="action-btn" onclick="downloadFile('playlist.m3u', event)">
+                    <i class="fas fa-download"></i> Download M3U
+                </button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calendar-alt"></i>
+                <h2>EPG Data</h2>
+            </div>
+            <div class="card-body">
+                <p>Electronic Program Guide (EPG) for channel listings and program schedules:</p>
+                
+                <div class="url-box">
+                    <div class="url-content" id="epg-url">http://192.168.1.153:8085/epg.xml</div>
+                    <button class="copy-btn" onclick="copyToClipboard('epg-url', event)" title="Copy to clipboard">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                
+                <div class="stat-row">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="value">Checking...</div>
+                            <div class="label">File Size</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="value">Checking...</div>
+                            <div class="label">Programs</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="action-btn" onclick="downloadFile('epg.xml', event)">
+                    <i class="fas fa-download"></i> Download EPG
+                </button>
+            </div>
+        </div>
+        
+        <h2 style="margin: 30px 0 20px; color: var(--secondary);">Setup Guide</h2>
+        
+        <div class="setup-cards">
+            <div class="setup-card">
+                <div class="setup-header">
+                    <div class="setup-number">1</div>
+                    <h3>Setting Up in Emby</h3>
+                </div>
+                <div class="setup-body">
+                    <p>Add your IPTV channels to Emby Media Server:</p>
+                    <ol>
+                        <li>In Emby Dashboard, go to <strong>Live TV</strong></li>
+                        <li>Click <strong>Add TV Provider</strong></li>
+                        <li>Select <strong>M3U Tuner</strong></li>
+                        <li>Enter the M3U URL from above</li>
+                        <li>Add EPG data in the guide section</li>
+                        <li>Save the settings and refresh your guide data</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="setup-card">
+                <div class="setup-header">
+                    <div class="setup-number">2</div>
+                    <h3>Other Players</h3>
+                </div>
+                <div class="setup-body">
+                    <p>These streams work with various IPTV players:</p>
+                    <ul>
+                        <li><strong>VLC Media Player:</strong> Media → Open Network Stream → paste M3U URL</li>
+                        <li><strong>Kodi:</strong> Add-ons → Install from repository → PVR clients → IPTV Simple Client</li>
+                        <li><strong>Perfect Player:</strong> Settings → General → Playlists → Add your M3U URL</li>
+                        <li><strong>TiviMate:</strong> Add playlist → M3U playlist → paste your M3U URL</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="setup-card">
+                <div class="setup-header">
+                    <div class="setup-number">3</div>
+                    <h3>Troubleshooting</h3>
+                </div>
+                <div class="setup-body">
+                    <p>If you encounter issues with your streams:</p>
+                    <ul>
+                        <li>Check the "Stream Status" tab to verify service availability</li>
+                        <li>Create a custom playlist with specific channels if the full list is too large</li>
+                        <li>Ensure your local network connection is stable</li>
+                        <li>Try refreshing the playlist in your player</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Copied to clipboard!</div>
+
+    <footer>
+        <p>&copy; 2025 IPTV Access Portal | Last Updated: Sun May 18 21:20:11 UTC 2025</p>
+    </footer>
+
+    <script>
+        // DOM ready function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if toast element exists, create it if not
+            if (!document.getElementById('toast')) {
+                const toastElement = document.createElement('div');
+                toastElement.id = 'toast';
+                toastElement.className = 'toast';
+                toastElement.textContent = '';
+                document.body.appendChild(toastElement);
+            }
+            
+            // Initialize the page
+            setTimeout(() => {
+                const statusBadge = document.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.innerHTML = '<i class="fas fa-check-circle" style="color: #2ecc71;"></i><span>Stream Status: Online</span>';
+                }
+                
+                const statValues = document.querySelectorAll('.stat-info .value');
+                if (statValues.length >= 4) {
+                    statValues[0].textContent = '58.1 MB';
+                    statValues[1].textContent = '1,452';
+                    statValues[2].textContent = '66.0 MB';
+                    statValues[3].textContent = '24,789';
+                }
+            }, 2000);
+        });
+        
+        // Function to show toast message
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            if (!toast) {
+                console.error('Toast element not found');
+                return;
+            }
+            
+            toast.textContent = message;
+            if (isError) {
+                toast.style.background = 'var(--danger)';
+            } else {
+                toast.style.background = isError ? 'var(--danger)' : 'var(--dark)';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.style.background = 'var(--dark)';
+            }, 2000);
+        }
+        
+        // Function to safely update button
+        function updateButton(button, icon) {
+            if (button && typeof button.innerHTML !== 'undefined') {
+                button.innerHTML = icon;
+            }
+        }
+        
+        // Function to copy text to clipboard with fallback
+        function copyToClipboard(elementId, event) {
+            const element = document.getElementById(elementId);
+            if (!element) {
+                console.error(`Element with ID ${elementId} not found`);
+                showToast('Error: Could not find element', true);
+                return;
+            }
+            
+            const text = element.textContent;
+            const clickedButton = event ? event.currentTarget : null;
+            
+            // Fallback copy function using document.execCommand
+            function fallbackCopyTextToClipboard(text) {
+                let successful = false;
+                try {
+                    // Create temporary element
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    
+                    // Make it invisible
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    textArea.style.top = "-999999px";
+                    document.body.appendChild(textArea);
+                    
+                    // Select and copy
+                    textArea.focus();
+                    textArea.select();
+                    successful = document.execCommand('copy');
+                    
+                    // Clean up
+                    document.body.removeChild(textArea);
+                    
+                    return successful;
+                } catch (err) {
+                    console.error('Fallback copy failed:', err);
+                    return false;
+                }
+            }
+            
+            // Success callback
+            function onCopySuccess() {
+                showToast('Copied to clipboard!');
+                updateButton(clickedButton, '<i class="fas fa-check"></i>');
+                
+                setTimeout(() => {
+                    updateButton(clickedButton, '<i class="fas fa-copy"></i>');
+                }, 2000);
+            }
+            
+            // Error callback
+            function onCopyError(error) {
+                console.error('Copy failed:', error);
+                showToast('Failed to copy!', true);
+            }
+            
+            // Try the modern API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(onCopySuccess)
+                    .catch((err) => {
+                        console.warn('Clipboard API failed, trying fallback:', err);
+                        
+                        // Try fallback
+                        const result = fallbackCopyTextToClipboard(text);
+                        if (result) {
+                            onCopySuccess();
+                        } else {
+                            onCopyError(new Error('Clipboard copy failed'));
+                        }
+                    });
+            } else {
+                // Use fallback immediately if modern API not available
+                const result = fallbackCopyTextToClipboard(text);
+                if (result) {
+                    onCopySuccess();
+                } else {
+                    onCopyError(new Error('Clipboard copy failed'));
+                }
+            }
+        }
+        
+        // Function to download file
+        function downloadFile(filename, event) {
+            try {
+                // Get base URL from the corresponding element
+                let baseUrl = '';
+                if (filename === 'playlist.m3u') {
+                    const element = document.getElementById('m3u-url');
+                    if (element) baseUrl = element.textContent;
+                } else if (filename === 'epg.xml') {
+                    const element = document.getElementById('epg-url');
+                    if (element) baseUrl = element.textContent;
+                }
+                
+                if (!baseUrl) {
+                    throw new Error(`Could not find URL for ${filename}`);
+                }
+                
+                // Create a link element
+                const link = document.createElement('a');
+                link.href = baseUrl;
+                link.download = filename;
+                
+                // Append to the document
+                document.body.appendChild(link);
+                
+                // Trigger download
+                link.click();
+                
+                // Clean up
+                document.body.removeChild(link);
+                
+                // Show download toast
+                showToast(`Downloading ${filename}...`);
+            } catch (error) {
+                console.error('Download error:', error);
+                showToast(`Failed to download ${filename}`, true);
+            }
+        }
+        
+
+    </script>
+</body>
+</html>
